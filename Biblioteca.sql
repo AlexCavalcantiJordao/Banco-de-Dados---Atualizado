@@ -103,9 +103,83 @@ values
 select * from Autor;
 
 -- Tabela de Livros...
-insert into Livro(NomeLivro, ISBN13, DataPub, PrecoLivro,
+insert into Livro (NomeLivro, ISBN13, DataPub, PrecoLivro,
 NumeroPagina, IdAssunto, IdEditora)
 values ('A Arte da Eletrônica', '9788582604342',
 '20170308', 30.74, 1160, 3, 24);
 
 select * from Livro;
+
+insert into Livro (NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPagina, IdAssunto, IdEditora)
+values
+	('Vinte Mil Léguas Submarinas', '97882850022', '2014-09-16', 24.50, 448, 1, 16), --Júlio Verne...
+	('O Investidor Inteligente', '9788595080805','2016-01-05', 79.90, 450, 7, 6); -- Benjamin Graham...
+
+-- Verificação...
+select * from Livro;
+
+--Inserir em lote (bulk) a partir de arquivos CSV...
+insert into Livro (NomeLivro, ISBN13, DataPub, PrecoLivro,
+NumeroPagina, IdAssunto, IdEditora)
+select 
+	NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPagina, 
+	IdAssunto, IdEditora
+from openrowset(
+	bulk 'Desktop\SQL\Livros.CSV',
+	formatfile = 'Desktop\SQL\Formato.xml',
+	codepage = '65001', -- UTF-8
+	firstrow = 2
+) as LivrosCSV;
+
+-- Verificação...
+select * from Livro;
+
+-- Tabela LivroAutor...
+insert into LivroAutor(IdLivro, IdAutor)
+values
+(100,15),
+(100,16),
+(101,27),
+(102,26),
+(103,41),
+(104,24),
+(105,32),
+(106,20),
+(107,27),
+(108,1),
+(109,22),
+(110,10),
+(111,21),
+(112,5),
+(113,10),
+(114,8),
+(115,18),
+(116,31),
+(117,22);
+
+-- Verificação...
+select * from LivroAutor;
+
+-- Verificação...
+select NomeLivro, NomeAutor, SobrenomeAutor
+from Livro
+inner join LivroAutor
+  on Livro.IdLivro = LivroAutor.IdAutor
+inner join Autor
+   on Autor.IdAutor = LivroAutor.IdAutor
+order by NomeLivro;
+
+-- Consulta Simples com Select...
+
+/* Sintaxe: Select coluna(s) from tabelas; */
+select NomeLivro from Livro;
+
+select SobrenomeAutor from Autor;
+
+select * from Autor;
+
+select NomeLivro, PrecoLivro, ISBN13
+from Livro;
+
+select IdEditora
+from Livro;
